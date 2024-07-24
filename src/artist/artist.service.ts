@@ -3,7 +3,7 @@ import { API_KEY, BASE_URL } from '../config';
 import { CsvService } from '../shared/csv/csv.service';
 import axios from 'axios';
 import { ArtistResponseDto } from './dto/artist-response.dto';
-import { artistsMock } from 'src/shared/randomArtists';
+import { artistsMock } from '../shared/randomArtists';
 
 @Injectable()
 export class ArtistService {
@@ -42,7 +42,7 @@ export class ArtistService {
       return [];
     }
   }
-  private async searchRandomArtistsUntilFound() {
+  public async searchRandomArtistsUntilFound() {
     try {
       const randomArtists = artistsMock;
       for (const artistName of randomArtists) {
