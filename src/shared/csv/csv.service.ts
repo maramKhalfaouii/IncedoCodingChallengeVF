@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as createCsvWriter from 'csv-writer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { csvDirectory } from 'src/config';
+import { csvDirectory } from '../../config';
 
 @Injectable()
 export class CsvService {

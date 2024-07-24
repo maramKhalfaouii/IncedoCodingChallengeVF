@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { API_KEY, BASE_URL } from 'src/config';
-import { CsvService } from 'src/shared/csv/csv.service';
+import { API_KEY, BASE_URL } from '../config';
+import { CsvService } from '../shared/csv/csv.service';
 import axios from 'axios';
-import { getRandomArtists } from 'src/shared/getRandomArtists';
 import { ArtistResponseDto } from './dto/artist-response.dto';
+import { artistsMock } from 'src/shared/randomArtists';
 
 @Injectable()
 export class ArtistService {
@@ -32,23 +32,27 @@ export class ArtistService {
     ];
     return { message: 'CSV file created successfully.', records };
   }
-  private async searchArtist(name: string): Promise<ArtistResponseDto[]> {
+  public async searchArtist(name: string): Promise<ArtistResponseDto[]> {
     const url = `${BASE_URL}&artist=${name}&api_key=${API_KEY}&format=json`;
     try {
       const { data } = await axios.get(url);
-      return data.results.artistmatches.artist || [];
+      return data.results.artistmatches.artist;
     } catch (error) {
       this.logger.error(`Failed to fetch artist data: ${error.message}`);
       return [];
     }
   }
   private async searchRandomArtistsUntilFound() {
-    const randomArtists = await getRandomArtists();
-    for (const artist of randomArtists) {
-      const artists = await this.searchArtist(artist);
-      if (artists.length) {
-        return artists;
+    try {
+      const randomArtists = artistsMock;
+      for (const artistName of randomArtists) {
+        const artists = await this.searchArtist(artistName);
+        if (artists.length) {
+          return artists;
+        }
       }
+    } catch (error) {
+      console.error('Error in searchRandomArtistsUntilFound:', error);
     }
     return [];
   }
