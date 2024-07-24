@@ -3,6 +3,7 @@ import { API_KEY, BASE_URL } from 'src/config';
 import { CsvService } from 'src/shared/csv/csv.service';
 import axios from 'axios';
 import { getRandomArtists } from 'src/shared/getRandomArtists';
+import { ArtistResponseDto } from './dto/artist-response.dto';
 
 @Injectable()
 export class ArtistService {
@@ -19,9 +20,19 @@ export class ArtistService {
     }
 
     await this.csvService.writeCSV(filename, artists);
-    return { message: 'CSV file created successfully.' };
+    const firstArtist = artists[0];
+    const records = [
+      {
+        name: firstArtist.name,
+        mbid: firstArtist.mbid,
+        url: firstArtist.url,
+        image_small: firstArtist.image[0]['#text'],
+        image: firstArtist.image[firstArtist.image.length - 1]['#text'],
+      },
+    ];
+    return { message: 'CSV file created successfully.', records };
   }
-  private async searchArtist(name: string): Promise<any[]> {
+  private async searchArtist(name: string): Promise<ArtistResponseDto[]> {
     const url = `${BASE_URL}&artist=${name}&api_key=${API_KEY}&format=json`;
     try {
       const { data } = await axios.get(url);
